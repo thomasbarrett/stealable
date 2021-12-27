@@ -5,6 +5,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import stealableContractAbi from "./abi/StealableContract.json";
 import { ethers } from 'ethers'
+import { getChain } from 'evm-chains'
 export const injectedConnector = new InjectedConnector({ supportedChainIds: [0x61] });
 
 const Main = () => {
@@ -22,13 +23,14 @@ const Main = () => {
     }
   }, [library, active]);
 
+  console.log(getChain(97))
   return (
     <div>
-      <div>ChainId: {chainId}</div>
+      <div>ChainId: {chainId ? getChain(chainId).name: "Loading..."}</div>
       <div>Account: {account}</div>
       <div>Owner: {owner == null ? "Loading...": owner}</div>
       {active ? (
-        <div>✅</div>
+        <div>Connected: ✅</div>
       ) : (
         <button type="button" onClick={connect}>
           Connect
