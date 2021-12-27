@@ -13,7 +13,7 @@ const Main = () => {
   const [owner, setOwner] = useState(null)
   const connect = useCallback(async () => {
     await activate(injectedConnector)
-  })
+  }, [injectedConnector])
 
   useEffect(async () => {
     if (active) {
@@ -23,7 +23,15 @@ const Main = () => {
     }
   }, [library, active]);
 
-  console.log(getChain(97))
+  const steal = useCallback(async () => {
+    if (active) {
+      const contract = new ethers.Contract("0xC9EF3209652efd9bEd191E3a6a9CD720Cb5Ee388", stealableContractAbi, library);
+      let tx = await contract.connect(library.getSigner()).steal();
+      console.log(tx.hash);
+      await tx.wait();
+    }
+  }, [library, active]);
+
   return (
     <div>
       <div>ChainId: {chainId ? getChain(chainId).name: "Loading..."}</div>
@@ -36,6 +44,7 @@ const Main = () => {
           Connect
         </button>
       )}
+      <button onClick={steal}>Steal</button>
     </div>
   )
 }
