@@ -7,6 +7,8 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import stealableContractAbi from "./abi/StealableContract.json";
 import { ethers } from 'ethers'
 import { getChain } from 'evm-chains'
+import Loader from "react-loader-spinner";
+
 const injectedConnector = new InjectedConnector({ supportedChainIds: [0x61] });
 const walletConnect = new WalletConnectConnector({
   supportedChainIds: [0x61],
@@ -15,9 +17,25 @@ const walletConnect = new WalletConnectConnector({
 })
 const connector = injectedConnector
 
+
+const LoadingButton = ({loading, children, onClick}) => {
+  return <button onClick={onClick}>
+      {loading ?
+      <Loader
+        type="ThreeDots"
+        color="#FFFFFF"
+        height={100}
+        width={100}
+      />
+      : children}
+  </button>
+}
+
 const Main = () => {
   const { library, chainId, account, activate, deactivate, active } = useWeb3React()
   const [owner, setOwner] = useState(null)
+  const [loading, setLoading] = useState(false);
+
   const connect = useCallback(async () => {
     try {
       await activate(connector, undefined, true)
@@ -29,20 +47,25 @@ const Main = () => {
     }
   }, [connector])
 
-  useEffect(async () => {
+  const refreshOwner = async () => {
     if (active) {
       const contract = new ethers.Contract("0xC9EF3209652efd9bEd191E3a6a9CD720Cb5Ee388", stealableContractAbi, library);
       const o = await contract.owner();
       setOwner(o);
     }
-  }, [library, active]);
+  }
+
+  useEffect(refreshOwner, [library, active]);
 
   const steal = useCallback(async () => {
     if (active) {
       const contract = new ethers.Contract("0xC9EF3209652efd9bEd191E3a6a9CD720Cb5Ee388", stealableContractAbi, library);
-      let tx = await contract.connect(library.getSigner()).steal();
-      console.log(tx.hash);
+      let promise = contract.connect(library.getSigner()).steal();
+      setLoading(true);
+      let tx = await promise;
       await tx.wait();
+      setLoading(false);
+      await refreshOwner();
     }
   }, [library, active]);
 
@@ -58,7 +81,7 @@ const Main = () => {
           Connect
         </button>
       )}
-      <button onClick={steal}>Steal</button>
+      <LoadingButton onClick={steal} loading={loading}>Steal</LoadingButton>
     </div>
   )
 }
