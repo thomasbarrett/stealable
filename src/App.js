@@ -1,19 +1,26 @@
 import './App.css';
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Web3ReactProvider, useWeb3React } from '@web3-react/core'
 import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
+import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import stealableContractAbi from "./abi/StealableContract.json";
 import { ethers } from 'ethers'
 import { getChain } from 'evm-chains'
-export const injectedConnector = new InjectedConnector({ supportedChainIds: [0x61] });
+const injectedConnector = new InjectedConnector({ supportedChainIds: [0x61] });
+const walletConnect = new WalletConnectConnector({
+  supportedChainIds: [0x61],
+  rpc: { 0x61: "https://data-seed-prebsc-1-s1.binance.org:8545/"},
+  qrcode: true,
+})
+const connector = walletConnect
 
 const Main = () => {
   const { library, chainId, account, activate, active } = useWeb3React()
   const [owner, setOwner] = useState(null)
   const connect = useCallback(async () => {
-    await activate(injectedConnector)
-  }, [injectedConnector])
+    await activate(connector, undefined, true)
+  }, [connector])
 
   useEffect(async () => {
     if (active) {
