@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/stealable/static/css/main.073c9b0a.css",
-    "main.js": "/stealable/static/js/main.1b8e60ef.js",
+    "main.js": "/stealable/static/js/main.09ed7c63.js",
     "index.html": "/stealable/index.html",
     "main.073c9b0a.css.map": "/stealable/static/css/main.073c9b0a.css.map",
-    "main.1b8e60ef.js.map": "/stealable/static/js/main.1b8e60ef.js.map"
+    "main.09ed7c63.js.map": "/stealable/static/js/main.09ed7c63.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.1b8e60ef.js"
+    "static/js/main.09ed7c63.js"
   ]
 }
