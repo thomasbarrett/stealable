@@ -13,13 +13,20 @@ const walletConnect = new WalletConnectConnector({
   rpc: { 0x61: "https://data-seed-prebsc-1-s1.binance.org:8545/"},
   qrcode: true,
 })
-const connector = walletConnect
+const connector = injectedConnector
 
 const Main = () => {
-  const { library, chainId, account, activate, active } = useWeb3React()
+  const { library, chainId, account, activate, deactivate, active } = useWeb3React()
   const [owner, setOwner] = useState(null)
   const connect = useCallback(async () => {
-    await activate(connector, undefined, true)
+    try {
+      await activate(connector, undefined, true)
+    } catch (err) {
+      // https://github.com/NoahZinsmeister/web3-react/issues/217
+      if (connector === walletConnect) {
+        connector.walletConnectProvider = undefined;
+      }
+    }
   }, [connector])
 
   useEffect(async () => {
